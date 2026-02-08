@@ -250,6 +250,14 @@ module jelly_FSM ( //input logic [2:0] 	HUNGER,
 		endcase
 	end
 	
+	//extra: display jelly on hex
+	assign HEX0 = 8'b11111111;
+	assign HEX1 = 8'b10010001;
+	assign HEX2 = 8'b11000111;
+	assign HEX3 = 8'b11000111;
+	assign HEX4 = 8'b10000110;
+	assign HEX5 = 8'b11110000;
+	
 	
 						
 endmodule
