@@ -1,0 +1,38 @@
+module jelly_FSM ( input logic 			GSENSOR_SDI,
+						 input logic [2:0] 	HUNGRY,
+						 input logic [2:0] 	HAPPY,
+						 input logic [1:0] 	KEY,
+						 input logic			MAX10_CLK1_50,
+						 input logic [9:0] 	SW,
+						 output logic [9:0] 	LEDR,
+						 output logic [7:0] 	HEX5,
+						 output logic [7:0] 	HEX4,
+						 output logic [7:0] 	HEX3,
+						 output logic [7:0] 	HEX2,
+						 output logic [7:0] 	HEX1,
+						 output logic [7:0] 	HEX0 );		
+						 
+	enum int unsigned {IDLE = 0, BLINK = 1, HAPPY = 2, SAD = 3, EATING = 4, PLAY = 5, DIZZY = 6, HUNGRY = 7, DEAD = 8} presentState = 0, nextState = 0;
+	
+	logic FEED = KEY[0];
+	logic PLAY = KEY[1];
+	logic [25:0] TICKER = 26'b0;
+	logic TICK = 1'b0;
+	
+	always_ff @(posedge CLK) begin
+		//we need a 1 second clock
+		//so toggle TICK every 25,000,000 cycles
+		TICKER = TICKER + 1'b1;
+		if (TICKER >= 25'd25_000_000) begin
+			TICK = ~TICK;
+		end
+		
+		
+	end
+	
+	always_comb begin
+		LEDR[0] = TICK;
+	end
+	
+						
+endmodule

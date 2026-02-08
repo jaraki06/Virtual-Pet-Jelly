@@ -1,0 +1,18 @@
+module jelly_FSM_top ( input logic [2:0] 	HUNGER,
+							  input logic [2:0] 	HAPPINESS,
+							  input logic [1:0] 	KEY,
+							  input logic			MAX10_CLK1_50,
+							  input logic [9:0] 	SW,
+							  output logic [9:0] LEDR,
+							  output logic [7:0] HEX5,
+							  output logic [7:0] HEX4,
+							  output logic [7:0] HEX3,
+							  output logic [7:0] HEX2,
+							  output logic [7:0] HEX1,
+							  output logic [7:0] HEX0,
+							  output logic [2:0] NEWHUNGER,
+							  output logic [2:0] NEWHAPPINESS );	
+				
+jelly_FSM dut(HUNGER, HAPPINESS, KEY, MAX10_CLK1_50, SW, LEDR, HEX5, HEX4, HEX3, HEX2, HEX1, HEX0, NEWHUNGER, NEHAPPINESS
+				
+endmodule
