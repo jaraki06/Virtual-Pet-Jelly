@@ -1,6 +1,6 @@
 module shaker(
-    input  logic signed [15:0] data_x,
-    input  logic               reset,
+    input  logic signed [15:0] data_x, // 'signed' is critical for < -THRESHOLD to work
+    input  logic               reset,  // Assuming active high reset from top level
     input  logic               clk,
     output logic               shake_event
 );
@@ -10,12 +10,8 @@ module shaker(
     
     localparam signed THRESHOLD = 16'd50; 
     localparam int    TIME_LIMIT = 25_000_000; 
-    localparam int    SHAKE_LIMIT = 100_000_000; 
-    localparam int    DIZZY_TIME = 100_000_000; 
-
     
     int timer;
-	 int shake_timer;
     logic [2:0] swap_count;
 	 
 	 // 1. Next State Logic (Combinational)
@@ -23,14 +19,17 @@ module shaker(
         next_state = present_state; 
 		  
 		  case (present_state)
+
 				SHAKEPOS: begin
-					  if (timer > TIME_LIMIT)       next_state = IDLE;
-					  else if (data_x < -THRESHOLD) next_state = SHAKENEG;
+					  if (data_x < -THRESHOLD) next_state = SHAKENEG;
+					  else if (timer > TIME_LIMIT)       next_state = IDLE;
+
 				end 
 				
 				SHAKENEG: begin
-					  if (timer > TIME_LIMIT)       next_state = IDLE;
-					  else if (data_x < -THRESHOLD) next_state = SHAKENEG;
+					  if (data_x > THRESHOLD)  next_state = SHAKEPOS;
+					  else if (timer > TIME_LIMIT)       next_state = IDLE;
+
 				end 
 
 			
@@ -87,7 +86,6 @@ module shaker(
         if (reset) begin 
             present_state <= IDLE;
 			  timer         <= 0;
-			  shake_timer   <= 0;
 			  swap_count    <= 0;
         end else begin
 		  
@@ -102,9 +100,9 @@ module shaker(
 			
             // Reset shake timer on shake entry
             if (next_state == SHAKEPOS || next_state == SHAKENEG) begin
-                shake_timer <= 0;
 					 swap_count <= 0;
 				end
+
 			end
 			
 			
@@ -115,20 +113,18 @@ module shaker(
 			case (present_state)
 				IDLE: begin
 					 timer <= 0;
-					 shake_timer <= 0;
 					 swap_count <= 0;
 				end 
 				
-						
 				SHAKEPOS, SHAKENEG: begin
-					shake_timer <= shake_timer + 1;
 					timer <= timer + 1;
 				end
 				
 				default: timer <= timer + 1;
 			endcase
+
 			end 
-		end
+			end
     end
 	 
 endmodule
