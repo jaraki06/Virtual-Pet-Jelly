@@ -1,11 +1,10 @@
-module jelly_FSM ( input logic [2:0] 	HUNGER,
-						 input logic [2:0] 	HAPPINESS,
+module jelly_FSM ( //input logic [2:0] 	HUNGER,
+						 //input logic [2:0] 	HAPPINESS,
 						 input logic [1:0] 	KEY,
 						 input logic			MAX10_CLK1_50,
 						 input logic [9:0] 	SW,
-						 input logic			shake_small,
-						 input logic			shake_hard,
-						 //output logic [9:0] 	LEDR,
+						 input logic			shake,
+						 output logic [9:0] 	LEDR,
 						 output logic [7:0] 	HEX5,
 						 output logic [7:0] 	HEX4,
 						 output logic [7:0] 	HEX3,
@@ -32,6 +31,12 @@ module jelly_FSM ( input logic [2:0] 	HUNGER,
 	assign RESETOFF = SW[0];
 	/////////////////////////assign LEDR[9] = RESETOFF;
 	
+	initial begin
+		NEWHUNGER = 3'b111;
+		NEWHAPPINESS = 3'b111;
+	
+	end
+	
 	
 	//accel
 	/////////////////////////assign LEDR[2] = shake_small;
@@ -44,6 +49,9 @@ module jelly_FSM ( input logic [2:0] 	HUNGER,
 	int hungerTick = 0;
 	int happyTick = 0;
 	
+	assign LEDR[0] = shake;
+	
+	
 	//a clock that will change values every 1 second (posedge every 1 second)
 	always_ff @(posedge MAX10_CLK1_50) begin
 		//we need a 1 second clock
@@ -54,27 +62,37 @@ module jelly_FSM ( input logic [2:0] 	HUNGER,
 			TICKER = 26'b0;
 			tickCount <= tickCount + 1;
 			hungerTick <= hungerTick + 1;
+			happyTick <= happyTick + 1;
 		end
 		
 		if (nextState != presentState) begin
 			tickCount <= 0;
 		end
 		
-		if (hungerTick > 30) begin
-			hungerTick <= 0;
-			NEWHUNGER <= HUNGER - 1'b1;
+		if (nextState == PLAYING && presentState == IDLE) begin
+			NEWHUNGER <= NEWHUNGER + 1'b1;
+		end 
+		else if (nextState == PLAYING && presentState == BLINK) begin
+			NEWHUNGER <= NEWHUNGER + 1'b1;
+		end 
+		
+		if (nextState == EATING && presentState == IDLE) begin
+			NEWHAPPINESS <= NEWHAPPINESS + 1'b1;
 		end
-		else begin
-			NEWHUNGER <= HUNGER;
+		else if (nextState == EATING && presentState == BLINK) begin
+			NEWHAPPINESS <= NEWHAPPINESS + 1'b1;
+		end 
+		
+		if (hungerTick > 5) begin
+			hungerTick <= 0;
+			NEWHUNGER <= NEWHUNGER - 1'b1;
 		end
 		
-		if (happyTick > 30) begin
+		if (happyTick > 5) begin
 			happyTick <= 0;
-			NEWHAPPINESS <= HAPPINESS - 1'b1;
+			NEWHAPPINESS <= NEWHAPPINESS - 1'b1;
 		end
-		else begin
-			NEWHAPPINESS <= HAPPINESS;
-		end
+		
 		
 		presentState <= nextState;
 		
@@ -88,55 +106,55 @@ module jelly_FSM ( input logic [2:0] 	HUNGER,
 		
 			IDLE: begin
 			//display neutral face
-				///////////////////////////////////LEDR[8:6] = 3'b000;
+				LEDR[8:6] = 3'b000;
 				STATE = 3'b000;
 			end
 		
 			BLINK: begin
 			//display blink face
-				if (HUNGER < 2'b11) begin
+				if (NEWHUNGER < 2'b11) begin
 					//display hungry
 				end
-				else if (HAPPINESS < 2'b11) begin
+				else if (NEWHAPPINESS < 2'b11) begin
 					//display sad
 				end
-				else if (HAPPINESS == 3'b111) begin
+				else if (NEWHAPPINESS == 3'b111) begin
 					//display happy
 				end
 				else begin
 					//display blink
 				end
-				///////////////////////////////////LEDR[8:6] = 3'b001;
+				LEDR[8:6] = 3'b001;
 				STATE = 3'b001;
 			end
 			
 			EATING: begin
 			//display eating face
-			///////////////////////////////////LEDR[8:6] = 3'b010;
+			LEDR[8:6] = 3'b010;
 			STATE = 3'b010;
 			end
 		
 			PLAYING: begin
 			//display playing face
-			///////////////////////////////////LEDR[8:6] = 3'b011;
+			LEDR[8:6] = 3'b011;
 			STATE = 3'b011;
 			end
 		
 			DIZZY: begin
 			//display dizzy face
-			///////////////////////////////////LEDR[8:6] = 3'b100;
+			LEDR[8:6] = 3'b100;
 			STATE = 3'b100;
 			end
 		
 			DEAD: begin
 			//display dead face
-			///////////////////////////////////LEDR[8:6] = 3'b101;
+			LEDR[8:6] = 3'b101;
 			STATE = 3'b101;
 			end
 
 			default: begin
 			//display neutral face
-			///////////////////////////////////LEDR[8:6] = 3'b000;
+			LEDR[8:6] = 3'b000;
 			STATE = 3'b000;
 			end
 		
@@ -156,13 +174,10 @@ module jelly_FSM ( input logic [2:0] 	HUNGER,
 				else if (PLAY) begin
 					nextState = PLAYING;
 				end
-				else if (shake_hard) begin
+				else if (shake) begin
 					nextState = DIZZY;
 				end
-				else if (shake_small) begin
-					nextState = PLAYING;
-				end
-				else if (HUNGER == 0) begin
+				else if (NEWHUNGER == 0 || NEWHAPPINESS == 0) begin
 					nextState = DEAD;
 				end
 				else if (tickCount >= 5) begin
@@ -182,13 +197,10 @@ module jelly_FSM ( input logic [2:0] 	HUNGER,
 				else if (PLAY) begin
 					nextState = PLAYING;
 				end 
-				else if (shake_hard) begin
+				else if (shake) begin
 					nextState = DIZZY;
 				end
-				else if (shake_small) begin
-					nextState = PLAYING;
-				end
-				else if (HUNGER == 0) begin
+				else if (NEWHUNGER == 0 || NEWHAPPINESS == 0) begin
 					nextState = DEAD;
 				end
 				else if (tickCount >= 1) begin
@@ -219,11 +231,11 @@ module jelly_FSM ( input logic [2:0] 	HUNGER,
 			end
 		
 			DIZZY: begin
-				if (tickCount >= 5) begin
-					nextState = IDLE;
+				if (shake) begin
+					nextState = DIZZY;
 				end
 				else begin
-					nextState = DIZZY;
+					nextState = IDLE;
 				end
 			end
 		
