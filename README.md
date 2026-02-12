@@ -1,5 +1,5 @@
 # Virtual Pet Jelly!
-*Made for Hack the Coast 2026 - a 24-hour hackathon*
+*Made for [Hack the Coast 2026](https://devpost.com/software/virtual-pet-jelly) - a 24-hour hackathon*
 
 Inspired by the classic childhood virtual pet games, we wanted to recreate the feeling of caring of a digital companion that reacts to how you interact with it in the real world. 
 
