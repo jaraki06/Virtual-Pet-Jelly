@@ -1,10 +1,10 @@
 # Virtual Pet Jelly!
 *Made for [Hack the Coast 2026](https://devpost.com/software/virtual-pet-jelly) - a 24-hour hackathon*
 
-Inspired by the classic childhood virtual pet games, we wanted to recreate the feeling of caring of a digital companion that reacts to how you interact with it in the real world. 
+In an increasingly digital world, we wanted to bridge the gap between hardware and emotional support. Inspired by the comforting nostalgia of childhood virtual pet games, we developed a companion that encourages tactile, real-world interaction rather than passive screen time. Our goal was to explore how low-level hardware can create a sense of comfort, interactivity and responsibility.
 
-## Inspiration
-In an increasingly digital world, we wanted to bridge the gap between hardware engineering and emotional support. Inspired by the comforting nostalgia of childhood virtual pet games, we developed a companion that encourages tactile, real-world interaction rather than passive screen time. Our goal was to explore how low-level hardware can create 
+## Demo video
+[![thumbnail](VirtualPet-t.png)](https://youtu.be/-wNpCRIsPDc)
 
 ## What it does
 Take care of a virtual pet and practice emotional grounding through physical and button-based interactions. The pet’s internal state acts as a mirror for the user’s attentiveness, encouraging a routine of care through physical interaction and empathy-based logic.
