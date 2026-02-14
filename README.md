@@ -15,10 +15,30 @@ Take care of a virtual pet and practice emotional grounding through physical and
 
 Each interaction affects the pet’s internal state and behaviour.
 
-## How we built it
-We built the core logic and state transitions on a **DE10-Lite FPGA**, using SystemVerilog finite state machines (FSMs) to manage both the game logic (your pet's internal state) and shake detection. The FPGA processes sensor data from the onboard **ADXL345 accelerometer** to detect shaking in real time, and uses the buttons for feed and play interactions.
+## Tech Stack
 
-The FPGA outputs the pet’s current state to an Arduino, which handles displaying the pet’s status through the Serial Monitor. Communication between the DE10-Lite and Arduino is done using Arduino-compatible I/O pins.
+| Component | Technology | Role |
+| :--- | :--- | :--- |
+| **FPGA** | Terasic DE10-Lite (Intel MAX 10) | Central Logic & State Management |
+| **HDL** | SystemVerilog | FSM Design & Hardware Description |
+| **Sensors** | ADXL345 Accelerometer | Real-time shake detection |
+| **Microcontroller** | Arduino (C++) | Serial Monitor interface & Status Display |
+| **Tools** | Quartus Prime | Synthesis, Bitstream Generation |
+
+---
+
+## How we built it
+The system is designed as a distributed architecture where the FPGA acts as the "brain" and the Arduino acts as the "display driver."
+
+### SystemVerilog FSMs
+We implemented Finite State Machines (FSMs) into the FPGA for deterministic state transitions:
+* **Game Logic:** Tracking internal vitals like hunger, happiness, and energy.
+* **Interaction Handling:** Handing button presses (Feed/Play).
+* **Motion Detection:** Processing raw data from the onboard **ADXL345 accelerometer** to trigger "shake" events.
+
+### Hardware Integration & Communication
+* **The FPGA** evaluates the internal state and outputs encoded signals through the DE10-Lite’s Arduino-compatible I/O pins.
+* **The Arduino** interprets these hardware signals and formats them for the Serial Monitor and LCD, providing a live status feed of your pet's
 
 ## Challenges we ran into
 Our original plan was to integrate RTOS with HDL logic on the DE10-Lite to combine HDL and C to print directly to the terminal. However, we could not find clear documentation on how to integrate these components. In the end, we decided to pivot by using an Arduino for output and display, which allowed us to move forward with our project.
